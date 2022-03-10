@@ -1,7 +1,10 @@
+import { Interface } from "readline";
+
 describe("Admin tests", ()=>{
   it("Restricts a User from posting for an amount of time", ()=>{
-    Admin.restictUser("123", 3, "for cursing [cause]")
-    expect(User.getUserProfile("123")).toHaveProperty("restricted.duration", 3 + " days");
+    Admin.restictUser("123", 3, "for cursing [cause]");
+
+    expect(User.getUserProfile("123")).toHaveProperty("restricted.duration", 3);
   })
 
   it("Deletes a comment from a post", ()=>{
