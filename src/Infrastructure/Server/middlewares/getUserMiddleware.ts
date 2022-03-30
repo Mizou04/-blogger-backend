@@ -1,20 +1,22 @@
+import User from "@/Entities/User";
 import UserControllersFactory from "@/Factories/UserFactory";
 import GetUserPresenter from "@/presenters/GetUserPresenter";
-import {Request, Response, NextFunction} from "express"
+import IUserViewModel from "@/ViewModels/IUserViewModel";
+import {Request, Response, NextFunction, RequestParamHandler} from "express"
 
 
-let userController = UserControllersFactory.makeGetUserController();
 
-export default async function getUserMiddleware(req : Request<{id : string, name : string}>, res : Response, next : NextFunction){
-  let data = await userController.onGetUser(req.params, new GetUserPresenter());
+let getUserByIdController = UserControllersFactory.makeGetUserByIdController();
+let presenter = new GetUserPresenter();
+
+export default async function getUserByIdMiddleware(req : Request, res : Response, next : NextFunction){
   try{
-    console.log("from getUserMiddleware.ts : "+ JSON.stringify(data));
-    req.params.name = "hamzza";
-    res.status(200).json(data);
+  let {id} = req.params;
+  let data = await getUserByIdController.onGetUser({id : id as string});
+    res.status(200).json(presenter.present(data as User));
   } catch(e){
     next(e)
     res.status(500).json(e);
   }
-    
-  // next();
+  next();
 }

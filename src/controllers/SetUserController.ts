@@ -4,14 +4,21 @@ import IUseCaseOutputPort from "@/Interactors/common/IUseCaseOutputPort";
 import IUserGateway from "@/Interactors/common/IUserGateway";
 
 export default class SetUSerController{
-  inputPort : IUseCaseInputPort<User, void, IUserGateway>;
-  constructor(inputPort : IUseCaseInputPort<User, void, IUserGateway>){
+  private inputPort : IUseCaseInputPort<User, string, IUserGateway>;
+
+  constructor(inputPort : IUseCaseInputPort<User, string, IUserGateway>){
     this.inputPort = inputPort;
   }
 
-  async onSetUser(params : User,outputPort : IUseCaseOutputPort<void, {notification : string}>) : Promise<void>{
-    this.inputPort.execute(params);
-    outputPort.present();
+  async onSetUser(params : User) : Promise<string>{
+    let data : string;
+    try{
+      data = await this.inputPort.execute(params);
+    } catch(e){
+      if(e instanceof SyntaxError) console.error(e);
+      data = (e as Error).message;
+    }
+    return data;
   }
 
 };
