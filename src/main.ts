@@ -1,34 +1,25 @@
 import express from "express"
-import getUserMiddleware from "./Infrastructure/Server/middlewares/getUserMiddleware";
-import {logErrorMiddleware, returnErrorMiddleware, logError} from "@/Infrastructure/Server/middlewares/errorsMiddlewares"
 import helmet from "helmet";
-import cors from "cors"
-import { setUserMiddleware } from "./Infrastructure/Server/middlewares/setUserMiddleware";
-import path from "path";
-import { CrossOriginOpenerPolicyOptions } from "helmet/dist/types/middlewares/cross-origin-opener-policy";
+import cors from "cors";
+import userRouter from "./Infrastracture/server/routers/UserRouter";
+// import {} from "body"
 
 let app = express();
 
-const whitelist = ['http://localhost:3000', 'http://localhost:3001']
-
 app.use(helmet())
-app.use(logErrorMiddleware);
 app.use(cors({
-  origin : '*'
+  origin : "*",
+  methods : ["GET", "POST", "PUT", "DELETE"]
 }))
-app.use(express.json(), express.urlencoded({extended : true}));
+app.use(express.urlencoded({extended : true}))
+app.use(express.json())
+app.use(require("exp"))
+
+app.use(userRouter);
+
+const PORT = 3000;
 
 
-
-app.get("/user/:id", getUserMiddleware);
-app.post("/user", setUserMiddleware);
-
-app.get("/", (req, res)=>{
-  res.send("hello")
-  // res.sendFile(path.join(__dirname,"../../frontend/public/index.html"))
-})
-
-
-app.listen(3000, ()=>{
-  console.log("you are listening at port:3000")
+app.listen(PORT, ()=>{
+  console.log("you are listening at port ", PORT)
 })
