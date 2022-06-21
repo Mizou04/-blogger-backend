@@ -1,8 +1,17 @@
 import mongoose from "mongoose"
-import 'dotenv/config'
+import dot from 'dotenv'
+dot.config();
 
-let url = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOSTNAME}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`
-
+let url = `mongodb://${process.env.MONGO_USERNAME as string}:${process.env.MONGO_PASSWORD as string}@${process.env.MONGO_HOSTNAME as string}:${process.env.MONGO_PORT as string}/${process.env.MONGO_DB as string}?authSource=admin`
+console.log(url)
 mongoose.connect(url);
+// .then(
+//   () => {
+//     console.log('someone connected!');
+//   },
+//   err => {
+//     console.log('error occured');
+//   }
+// );;
 
-export {}
+export = {}

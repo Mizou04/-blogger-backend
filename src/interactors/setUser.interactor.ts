@@ -5,26 +5,33 @@ import { UserGateway } from "./common/db.gateway";
 
 
 export default class SetUser implements SetUserInputPort{
-  readonly outputPort: SetUserOutputPort;
-  readonly gateway : UserGateway;
-  constructor(outputport : SetUserOutputPort, gateway : UserGateway){
-    this.outputPort = outputport;
-    this.gateway = gateway;
+  outputPort : SetUserOutputPort;
+  gateway : UserGateway;
+  constructor(outputPort : SetUserOutputPort, userRepository : UserGateway){
+    this.outputPort = outputPort;
+    this.gateway = userRepository;
   }
-  async execute(user: User): Promise<string> {
-    return this.outputPort.present({})
+  async execute(user: User): Promise<null> {
+    try {
+      const existedUser = await this.gateway.getUser({providerId : user.providerId || "", email : user.email || "", username : user.username || ""});
+      if(existedUser &&  existedUser?.username === user.username) throw new Error(`User with username : ${user.username} already exists`);
+      if(existedUser &&  existedUser?.email === user.email) throw new Error(`User with email : ${user.email} already exists`);
+      if(existedUser && existedUser?.providerId === user.providerId) throw new Error(`User with this provider already exists`);
+      this.gateway.setUser(user);
+      return this.outputPort.present();
+    } catch (e) {
+      throw e
+    }
   }
 }
-
-
 
 export interface SetUserInputPort{
   readonly outputPort : SetUserOutputPort,
   readonly gateway : UserGateway
-  execute(user : User) : Promise<string>
+  execute(user : User) : Promise<null>
 }
 
 export interface SetUserOutputPort{
-  present(something : any) : string
+  present(something? : any) : null
 }
 

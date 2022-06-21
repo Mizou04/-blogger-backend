@@ -1,3 +1,4 @@
+import { userParams } from "@/common/userParams";
 import { GetUserInputPort } from "@/interactors/getUser.interactor";
 import { UserVM } from "@/viewmodels/userVM";
 
@@ -8,7 +9,7 @@ export default class GetUserController{
     this.inputPort = inputPort
   }
 
-  async execute(params: { criteria: "id" | "username"; value: string | undefined; }) : Promise<UserVM>{
+  async execute(params: userParams) : Promise<UserVM>{
     return await this.inputPort.execute(params);
   }
 }

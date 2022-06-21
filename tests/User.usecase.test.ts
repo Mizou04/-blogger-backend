@@ -1,11 +1,18 @@
 import GetUserController from "@/controllers/getUser.controller";
+import SetUserController from "@/controllers/setUser.controller";
 import User from "@/Entities/User"
 import { UserGateway } from "@/interactors/common/db.gateway";
 import GetUser from "@/interactors/getUser.interactor";
+import SetUser, { SetUserOutputPort } from "@/interactors/setUser.interactor";
 import GetUserPresenter from "@/presenters/getUser.presenter";
 import UserRepository from "@/repositories/User.repository";
 import { UserVM } from "@/viewmodels/userVM";
+import mockPresenter, {mockPresenterMethod} from "@/presenters/__mocks__/setUser.presenter"
+jest.mock("@/presenters/__mocks__/setUser.presenter")
 
+// let presn = jest.mocked<SetUserOutputPort>({present(something?) {
+//   return null
+// }})
 let user : User = {id : "123456789", name: "hamza", username : "hamza", password : "123455",  email : "ha@gmail.com"};
 
 let mockHappyGateway : UserGateway = {
@@ -69,9 +76,12 @@ let mockMadGateway : UserGateway = {
   },
 }
 
+let presn = mockPresenter();
+
 let presenter = new GetUserPresenter();
 let interactor = new GetUser(presenter, new UserRepository())
 let getUser = new GetUserController(interactor)
+let setUser = new SetUser(presn, mockHappyGateway);
 
 describe("test User usecases successes [application logic]", ()=>{
   beforeAll(()=>{
@@ -85,12 +95,16 @@ describe("test User usecases successes [application logic]", ()=>{
     })
   })
   test("get user instance", ()=>{
-    const data = getUser.execute({criteria : "id", value : "123456789"});
+    const data = getUser.execute({id : "123456789"});
     expect(data).resolves.toHaveProperty("user.id", "123456789")
   })
-  // test("create user instance", ()=>{
-  //   expect(setUser.execute(typeof User)).toBe(null)
-  // })
+  test("create user instance", ()=>{
+    expect(setUser.execute(user)).resolves.toBe(null)
+  })
+  test("presenter is called", ()=>{
+    expect(mockPresenter).toHaveBeenCalledTimes(1)
+  })
+  
   // test("update user instance", ()=>{
   //   expect(updateUser.execute({parameter : "id", value : "123456789"}, typeof User)).toBe(typeof UserVM)
   // })
@@ -111,12 +125,12 @@ describe("test User usecases errors [application logic]", ()=>{
       }
     })
   })
-  test("can't get User object", async ()=>{
-    expect(async ()=>{await getUser.execute({criteria : "id", value : "123456789"})}).rejects.toThrowError()
+  test("can't get User object", ()=>{
+    expect(async ()=>{ await getUser.execute({id : "123456789"})}).rejects.toThrowError()
   })
-  // test("create user instance", ()=>{
-  //   expect(setUser.execute(typeof User)).toThrowError()
-  // })
+  test("create user instance", ()=>{
+    expect(()=> setUser.execute(user)).rejects.toThrowError()
+  })
   // test("update user instance", ()=>{
   //   expect(updateUser.execute({parameter : "id", value : "123456789"}, typeof User)).toThrowError()
   // })

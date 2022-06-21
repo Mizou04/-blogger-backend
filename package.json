@@ -9,7 +9,7 @@
     "start": "ts-node src/main.ts && npm run fix-paths",
     "build": "tsc -p . && npm run fix-paths",
     "test:watch": "jest --watchAll",
-    "test:watch:match": "jest --watchAll -t",
+    "test:watch:match": "jest --watchAll --testRegex",
     "fix-paths": "tspath -f",
     "jest:help": "jest -h"
   },

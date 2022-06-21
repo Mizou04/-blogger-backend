@@ -20,6 +20,7 @@ export default class GetUser implements GetUserInputPort{
         throw new Error("user not found")
       }
     } catch (e){
+      if(e instanceof Error) throw e
       throw e
     }
   }
@@ -30,7 +31,7 @@ export default class GetUser implements GetUserInputPort{
 export interface GetUserInputPort{
   readonly outputPort : GetUserOutputPort,
   readonly gateway : UserGateway
-  execute(params : {criteria : "id" | "username", value : User["id" | "username"]}) : Promise<UserVM>
+  execute(params : userParams) : Promise<UserVM>
 }
 
 export interface GetUserOutputPort{
