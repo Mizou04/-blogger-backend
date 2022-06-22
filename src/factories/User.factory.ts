@@ -1,8 +1,9 @@
 import GetUserController from "@/controllers/getUser.controller";
 import SetUserController from "@/controllers/setUser.controller";
 import GetUser from "@/interactors/getUser.interactor";
-import SetUser, { SetUserOutputPort } from "@/interactors/setUser.interactor";
+import SetUser from "@/interactors/setUser.interactor";
 import GetUserPresenter from "@/presenters/getUser.presenter";
+import { SetUserPresenter } from "@/presenters/setUser.presenter";
 import UserRepository from "@/repositories/User.repository";
 
 let gateway = new UserRepository();
@@ -15,9 +16,7 @@ class UserFactory{
     return controller
   }
   makeSetUser(){
-    let presenter : SetUserOutputPort = {present(something?) {
-      return null
-    },};
+    let presenter = new SetUserPresenter();
     let interactor = new SetUser(presenter, gateway)
     let controller = new SetUserController(interactor)
     return controller
