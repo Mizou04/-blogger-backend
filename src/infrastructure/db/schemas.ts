@@ -4,7 +4,7 @@ import {Schema} from "mongoose"
 
 
 export let UserSchema = new Schema<User>({
-  id : String,
+  id : {type : String, required : true},
   providerId : {
     type : String,
     required : false,
@@ -17,8 +17,8 @@ export let UserSchema = new Schema<User>({
     type : String,
     required : false
   },
-  name : String,
-  username : String,
+  name : {type : String, required : true},
+  username : {type : String, required : true},
   joinedAt : Date,
   lastModified : Date
 })

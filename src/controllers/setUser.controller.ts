@@ -7,6 +7,10 @@ export default class SetUserController{
     this.inputPort = inputPort
   }
   async execute(user : User){
-    return await this.inputPort.execute(user)
+    try{
+      return await this.inputPort.execute(user)
+    } catch (e){
+      throw e
+    }
   }
 }

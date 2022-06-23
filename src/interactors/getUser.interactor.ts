@@ -1,3 +1,4 @@
+import { DBError } from "@/common/customErrors";
 import { userParams } from "@/common/userParams";
 import User from "@/Entities/User"
 import { UserVM } from "@/viewmodels/userVM"
@@ -14,13 +15,12 @@ export default class GetUser implements GetUserInputPort{
   async execute(params: userParams): Promise<UserVM> {
     try{
       let user = await this.gateway.getUser(params);
-      if(user){
+      if(user !== null){
         return this.outputPort.present(user)
       } else {
-        throw new Error("user not found")
+        throw new DBError("user not found")
       }
     } catch (e){
-      if(e instanceof Error) throw e
       throw e
     }
   }
