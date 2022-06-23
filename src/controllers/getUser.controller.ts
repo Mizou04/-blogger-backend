@@ -10,6 +10,10 @@ export default class GetUserController{
   }
 
   async execute(params: userParams) : Promise<UserVM>{
-    return await this.inputPort.execute(params);
+    try{
+      return await this.inputPort.execute(params)
+    } catch (e){
+      throw e
+    }
   }
 }

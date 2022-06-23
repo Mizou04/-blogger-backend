@@ -1,3 +1,4 @@
+import { DBError } from "@/common/customErrors";
 import { userParams } from "@/common/userParams";
 import User from "@/Entities/User";
 import getUser from "@/infrastructure/db/handlers/getUser";
@@ -21,11 +22,12 @@ export default class UserRepository implements UserGateway{
     try {
       let u = new UserModel(params);
       let data = await u.save();
-      if(data.isNew){
+      if(data) {
         return null
-      } else {
-        throw new Error("user already exists")
-      };
+      }
+      else {
+        throw new DBError("can't create user")
+      }
     } catch (e) {
       throw e
     }
