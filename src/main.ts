@@ -30,7 +30,7 @@ const SESSION = session({
   name : "userSession",
   secret : process.env.SESSION_SECRET as string,
   cookie : {
-            maxAge : 20000,
+            maxAge : Infinity,
             secure : "auto"
           },
   resave : false,

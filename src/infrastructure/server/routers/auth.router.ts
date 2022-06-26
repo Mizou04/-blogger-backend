@@ -83,22 +83,13 @@ googleAuthRouter.get('/authentication/google',
 googleAuthRouter.get('/authentication/google/callback', 
   passport.authenticate('google', {failureRedirect: 'http://localhost:8080/authentication/signin'}),
   function(req : Request<{authenticatedUser : UserVM}, {}, {authenticatedUser : UserVM}, {authenticatedUser : UserVM}>, res, next) {
-    // let user = await getUser.execute({providerId : (req.user as {id : string}).id})
-    // Successful authentication, redirect home.
-    // let user = {id : req.id}
-    // res.locals.authenticatedUser = user as UserVM;
-    // //@ts-ignore
-    // console.log("74", req.session.passport.user)
-    // res.redirect('http://localhost:8080/');
     console.log("user in req object: ",req.user);
-    let responseHTML = `<html><head><title>Main</title></head><body></body><script>let res = ${JSON.stringify({
-          user: req.user
-      })}; this.opener.postMessage(res, "*"); this.close();</script></html>`
-    // responseHTML = responseHTML.replace('%value%', JSON.stringify({
-    //     user: req.user
-    // }));
-    res.send(responseHTML);
-    // res.redirect('/')
+    // let responseHTML = `<html><head><title>Main</title></head><body></body><script>let res = ${JSON.stringify({
+    //       user: req.user
+    //   })}; window.opener.postMessage(res, "*"); window.close();</script></html>`
+    // res.send(responseHTML);
+    // // res.redirect('/')
+    res.send(req.user)
   });
 
   googleAuthRouter.get('/logout', (req, res, next)=>{

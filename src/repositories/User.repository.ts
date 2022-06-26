@@ -1,7 +1,6 @@
 import { DBError } from "@/common/customErrors";
 import { userParams } from "@/common/userParams";
 import User from "@/Entities/User";
-import getUser from "@/infrastructure/db/handlers/getUser";
 import { UserModel } from "@/infrastructure/db/models";
 import { UserSchema } from "@/infrastructure/db/schemas";
 import { UserGateway } from "@/interactors/common/db.gateway";
