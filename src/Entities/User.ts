@@ -13,8 +13,9 @@ export default class User{
   password? : string;
   readonly joinedAt?: Date;
   lastModified?: Date;
+  blogposts?: Record<string, {id : string, title : string, overview : string}> | {};
   private constructor(params : User){
-    this.providerId = params.providerId; 
+    this.providerId = params.providerId;
     this.username = params.username;
     this.name = params.name;
     this.email = params.email;
@@ -22,6 +23,7 @@ export default class User{
     this.id = params.id || v4().replace(/-/igm, ""); 
     this.joinedAt =  new Date();
     this.lastModified =  new Date();
+    this.blogposts =  params.blogposts || {};
   }
   
   static create(params: User): User {
@@ -32,8 +34,7 @@ export default class User{
     if(!params.email && !params.providerId) throw new InvalidInputError("user must have email or connect with provider");
     if(params.providerId && params.password) throw new InvalidInputError("cannot connect with provider and the same email");
 
-    let user = new User(params);
-    return user  
+    return new User(params)
   }
 
 }

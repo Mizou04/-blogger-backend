@@ -45,7 +45,7 @@ async function getOrCreateUser(
               email : profile.emails![0].value,
               name : profile._json.name || "user"+profile.id.slice(0,6),
               username : profile?.username || "user"+profile.id.slice(0,6),
-              profilePic : profile.photos![0].value
+              profilePic : profile.photos![0].value,
             });
             /**
              * if result == null means our user creation has succeeded else will throw error so we have to rethrow it
