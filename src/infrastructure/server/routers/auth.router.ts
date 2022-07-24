@@ -7,6 +7,7 @@ import { DBError, InvalidInputError } from "@/common/customErrors";
 import express from "express"
 import { UserVM } from "@/viewmodels/userVM";
 import User from "@/Entities/User";
+import { nextTick } from "process";
 
 let googleAuthRouter = express.Router();
 
@@ -17,7 +18,8 @@ googleAuthRouter.use(passport.initialize());
 googleAuthRouter.use(passport.session())
 
 
-let getUser = userFactory.makeGetUser(), setUser = userFactory.makeSetUser();
+let getUser = userFactory.makeGetUser(), 
+    setUser = userFactory.makeSetUser();
 
 async function getOrCreateUser(
   req : Request,
@@ -26,22 +28,36 @@ async function getOrCreateUser(
   profile : Google.Profile, 
   cb : Google.VerifyCallback){
     try{
+      /**
+       * if user doesn't exist this function call will throw an Error of DBError type
+       * else will return a user instance and we quit this code block
+      */
       let existedUser : UserVM = await getUser.execute({providerId : profile.id});
       return cb(null, existedUser);
     } catch (e){
       if(e instanceof DBError){
         try {
+          /**
+           * we catch DBError errors and handle them by creating a new user
+           */
             let result = await setUser.execute({
               providerId : profile.id,
               email : profile.emails![0].value,
-              name : profile._json.name! || "user"+profile.id.slice(0,6),
-              username : profile?.username || "user"+profile.id.slice(0,6)
-            })
+              name : profile._json.name || "user"+profile.id.slice(0,6),
+              username : profile?.username || "user"+profile.id.slice(0,6),
+              profilePic : profile.photos![0].value
+            });
+            /**
+             * if result == null means our user creation has succeeded else will throw error so we have to rethrow it
+             */
             if(result == null){
               try{
                 let newUser = await getUser.execute({providerId : profile.id});
                 return cb(null, newUser);
               } catch (e){
+            /**
+             * we rethrow the error because we don't want to handle it here
+             */
                 throw e
               }
             }
@@ -68,33 +84,27 @@ passport.serializeUser((user : Express.User, done)=>{
   done(null, user)
 })
 passport.deserializeUser((obj : UserVM, done)=>{
-  done(null, obj)
+  getUser.execute({id : obj.id}).then(u=>{
+    done(null, u)
+  })
 })
 
-
-googleAuthRouter.use((err : Error, req : Request, res : Response, next : NextFunction)=>{
-  console.log("err MiddleWare : ", err.message);
-  res.status(404).json({title : err.name, message : err.message})
-})
 
 googleAuthRouter.get('/authentication/google',
   passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 googleAuthRouter.get('/authentication/google/callback', 
-  passport.authenticate('google', {failureRedirect: 'http://localhost:8080/authentication/signin'}),
+  passport.authenticate('google', {failureRedirect: 'http://localhost:8080/signin'}),
   function(req : Request<{authenticatedUser : UserVM}, {}, {authenticatedUser : UserVM}, {authenticatedUser : UserVM}>, res, next) {
+    res.redirect("http://localhost:8080/response");
     console.log("user in req object: ",req.user);
-    // let responseHTML = `<html><head><title>Main</title></head><body></body><script>let res = ${JSON.stringify({
-    //       user: req.user
-    //   })}; window.opener.postMessage(res, "*"); window.close();</script></html>`
-    // res.send(responseHTML);
-    // // res.redirect('/')
-    res.send(req.user)
   });
+  
 
-  googleAuthRouter.get('/logout', (req, res, next)=>{
-    req.logOut();
-  })
+googleAuthRouter.get('/logout', (req, res, next)=>{
+  req.logOut();
+})
+
 
 
 export default googleAuthRouter;

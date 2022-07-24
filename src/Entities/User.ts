@@ -6,6 +6,7 @@ import { userParams } from "@/common/userParams";
 export default class User{
   readonly id? : string;
   readonly providerId? : string; // if Email exists the user would be registred with Email not [social media]
+  readonly profilePic? : string; 
   username : string;
   name : string;
   email : string; 
