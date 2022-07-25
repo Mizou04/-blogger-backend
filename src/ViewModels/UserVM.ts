@@ -1,13 +1,14 @@
 import User from "@/Entities/User";
 
 export class UserVM{
-  readonly id? : User["id"];
+  readonly id? : string;
   readonly providerId? : string;
   readonly username : string;
   readonly name : string;
   readonly email : string;
   readonly joinedAt? : string;
   readonly lastModified? : string;
+  readonly profilePic? : string;
   readonly blogposts? : User["blogposts"];
   constructor(user : User){
     this.id = user.id;

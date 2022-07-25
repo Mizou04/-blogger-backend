@@ -1,3 +1,4 @@
+import { BlogPost } from "@/Entities/BlogPost";
 import User from "@/Entities/User"
 import { createHash } from "crypto";
 import {Schema} from "mongoose"
@@ -23,6 +24,35 @@ export let UserSchema = new Schema<User>({
   lastModified : Date
 })
 
+export let PostSchema = new Schema<BlogPost>({
+  id : {
+    type : String,
+    required : true
+  },
+  title : {
+    type : String,
+    required : true,
+    maxlength : 80
+  },
+  content : {
+    type : String,
+    required : true, 
+  },
+  overview : {
+    type : String,
+    required : true,
+    maxlength : 120
+  },
+  owner : {
+    type : {
+          username : String,
+          id : String,
+          email : String
+        },
+    required : true,
+  }
+})
+
 // UserSchema.pre("save", function(next){
 //   let user = this;
 //   if(this.isNew){
@@ -31,4 +61,4 @@ export let UserSchema = new Schema<User>({
 //     throw new Error("user already exists")
 //   };
 
-// })
+// }) Omit<UserVM, "providerId" | "lastModified" | "joinedAt" | "name">

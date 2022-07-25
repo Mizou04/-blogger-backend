@@ -5,8 +5,13 @@ import { UserModel } from "@/infrastructure/db/models";
 import { UserGateway } from "@/interactors/common/db.gateway";
 
 export default class UserRepository implements UserGateway{
+  /** 
+   * get user that have one of the criterias in the params
+   * @param params an object with different criterias & the funcion use one of them to check for the user
+   */
   async getUser(params : userParams) : Promise<User | null>{
     try{
+      /**transform an object to array of objects containing (key:value)s of original object */
       let query : {}[] = [];
       let ens = Object.entries(params);
       ens.map(e => query.push({[e[0]] : e[1]}));
