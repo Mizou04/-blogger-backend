@@ -9,7 +9,7 @@ export class UserVM{
   readonly joinedAt? : string;
   readonly lastModified? : string;
   readonly profilePic? : string;
-  readonly blogposts? : User["blogposts"];
+  readonly blogPosts? : User["blogPosts"];
   constructor(user : User){
     this.id = user.id;
     this.providerId = user.providerId;
@@ -18,6 +18,7 @@ export class UserVM{
     this.email = user.email;
     this.joinedAt = user.joinedAt?.toString();
     this.lastModified = user.lastModified?.toString();
+    this.blogPosts = user.blogPosts;
   }
 }
 

@@ -10,10 +10,10 @@ import { UserVM } from "./viewmodels/userVM";
   // }
 }
 
-// declare module "express-serve-static-core"{
-//   interface Request {
-//     authenticatedUser : UserVM
-//   }
-//   interface Response {
-//   }
-// }
+declare module "express-serve-static-core"{
+  interface Request {
+    authenticatedUser : UserVM
+  }
+  interface Response {
+  }
+}

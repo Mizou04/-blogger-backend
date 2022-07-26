@@ -7,12 +7,12 @@ import { DBError, InvalidInputError } from "@/common/customErrors";
 import express from "express"
 import { UserVM } from "@/viewmodels/userVM";
 import User from "@/Entities/User";
-import { nextTick } from "process";
+
+
 
 let googleAuthRouter = express.Router();
 
 const GoogleStrategy = Google.Strategy;
-
 
 googleAuthRouter.use(passport.initialize());
 googleAuthRouter.use(passport.session())
@@ -20,8 +20,11 @@ googleAuthRouter.use(passport.session())
 
 let getUser = userFactory.makeGetUser(), 
     setUser = userFactory.makeSetUser();
+let isNewUser : boolean = true;
+    
 
-async function getOrCreateUser(
+
+async function getOrCreateUserWithGoogle(
   req : Request,
   accessToken : string,
   refreshToken : string,
@@ -33,6 +36,7 @@ async function getOrCreateUser(
        * else will return a user instance and we quit this code block
       */
       let existedUser : UserVM = await getUser.execute({providerId : profile.id});
+      isNewUser = false;
       return cb(null, existedUser);
     } catch (e){
       if(e instanceof DBError){
@@ -44,7 +48,7 @@ async function getOrCreateUser(
               providerId : profile.id,
               email : profile.emails![0].value,
               name : profile._json.name || "user"+profile.id.slice(0,6),
-              username : profile?.username || "user"+profile.id.slice(0,6),
+              username : profile?._json.name || "user"+profile.id.slice(0,6),
               profilePic : profile.photos![0].value,
             });
             /**
@@ -62,6 +66,7 @@ async function getOrCreateUser(
               }
             }
           } catch (error) {
+            // and here we handle the error
             if(error instanceof DBError) return console.log({title : error.title, message : error.message});
             cb(error as Error);
           }
@@ -77,16 +82,16 @@ passport.use(new GoogleStrategy({
     clientSecret : process.env.CLIENT_SECRET + "",
     passReqToCallback : true,
     callbackURL: "http://localhost:4000/authentication/google/callback",
-  }, getOrCreateUser)
+  }, getOrCreateUserWithGoogle)
 );
 
 passport.serializeUser((user : Express.User, done)=>{
   done(null, user)
 })
 passport.deserializeUser((obj : UserVM, done)=>{
-  getUser.execute({id : obj.id}).then(u=>{
-    done(null, u)
-  })
+  // getUser.execute({id : obj.id}).then(u=>{
+    done(null, obj)
+  // })
 })
 
 
@@ -94,15 +99,35 @@ googleAuthRouter.get('/authentication/google',
   passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 googleAuthRouter.get('/authentication/google/callback', 
-  passport.authenticate('google', {failureRedirect: 'http://localhost:8080/signin'}),
+  passport.authenticate('google', {failureRedirect: 'http://localhost:4000/'}),
   function(req : Request<{authenticatedUser : UserVM}, {}, {authenticatedUser : UserVM}, {authenticatedUser : UserVM}>, res, next) {
-    res.redirect("http://localhost:8080/response");
+    res.redirect("http://localhost:4000/");
     console.log("user in req object: ",req.user);
   });
-  
+
+// googleAuthRouter.use((req, res, next)=>{
+//   // (req.cookies && req.user) && res.redirect("http://localhost:8080/modify-profile");
+//   console.log(req.cookies)
+// })
+
+// googleAuthRouter.use((req, res, next)=>{
+//   res.setHeader("set-cookie", `isNewUser=${isNewUser}`)
+// })
+
 
 googleAuthRouter.get('/logout', (req, res, next)=>{
-  req.logOut();
+  if(req.user){
+    req.logOut();
+    console.log("before", req.session.cookie)
+    req.session.cookie.expires = new Date(1);
+    console.log("after", req.session.cookie)
+    req.session.destroy((err)=>{
+      if(err) return res.status(400).send({title : "error", msg : err.message})
+      res.redirect("/")
+    })
+  } else {
+    res.redirect("/")
+  }
 })
 
 

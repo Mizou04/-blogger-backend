@@ -7,17 +7,19 @@ export class BlogPost{
   title : string;
   content : string;
   overview :string;
+  thumbnail : string;
   readonly createdAt : Date;
   lastModified : Date;
-  readonly owner : Omit<UserVM, "providerId" | "lastModified" | "joinedAt" | "name">;
+  readonly owner : Omit<UserVM, "providerId" | "lastModified" | "joinedAt" | "name" | "blogPosts">;
   private constructor(params : BlogPost){
     this.id = params.id || v4().toString().replace(/-/igm, '');
     this.title = params.title;
     this.content = params.content; 
     this.overview = params.overview; 
+    this.thumbnail = params.thumbnail; 
     this.createdAt = params.createdAt || new Date(); 
     this.lastModified = params.lastModified; 
-    this.owner = params.owner; 
+    this.owner = params.owner;
   }
 
   static create(params : BlogPost): BlogPost{

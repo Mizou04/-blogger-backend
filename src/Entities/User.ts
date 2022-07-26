@@ -6,14 +6,15 @@ import { userParams } from "@/common/userParams";
 export default class User{
   readonly id? : string;
   readonly providerId? : string; // if Email exists the user would be registred with Email not [social media]
-  readonly profilePic? : string; 
+  profilePic? : string; 
+  coverPic? : string; 
   username : string;
   name : string;
   email : string; 
   password? : string;
   readonly joinedAt?: Date;
   lastModified?: Date;
-  blogposts?: Record<string, {id : string, title : string, overview : string}> | {};
+  blogPosts?: Record<string, {id : string, title : string, overview : string}> | {};
   private constructor(params : User){
     this.providerId = params.providerId;
     this.username = params.username;
@@ -23,7 +24,7 @@ export default class User{
     this.id = params.id || v4().replace(/-/igm, ""); 
     this.joinedAt =  new Date();
     this.lastModified =  new Date();
-    this.blogposts =  params.blogposts || {};
+    this.blogPosts =  params.blogPosts || {};
   }
   
   static create(params: User): User {
