@@ -4,8 +4,11 @@ import { createHash } from "crypto";
 import {Schema} from "mongoose"
 
 
-export let UserSchema = new Schema<User>({
-  id : {type : String, required : true},
+export const UserSchema = new Schema<User>({
+  id : {
+    type : String, 
+    required : true
+  },
   providerId : {
     type : String,
     required : false,
@@ -18,13 +21,33 @@ export let UserSchema = new Schema<User>({
     type : String,
     required : false
   },
-  name : {type : String, required : true},
-  username : {type : String, required : true},
-  joinedAt : Date,
-  lastModified : Date
+  name : {
+    type : String, 
+    required : true
+  },
+  username : {
+    type : String, 
+    required : true
+  },
+  profilePic : {
+    type : String,
+    required : true
+  },
+  coverPic : {
+    type : String,
+    required : true
+  },
+  joinedAt : {
+    type : Date,
+    required : true
+  },
+  lastModified : {
+    type : Date,
+    required : true
+  }
 })
 
-export let PostSchema = new Schema<BlogPost>({
+export const PostSchema = new Schema<BlogPost>({
   id : {
     type : String,
     required : true
@@ -33,6 +56,10 @@ export let PostSchema = new Schema<BlogPost>({
     type : String,
     required : true,
     maxlength : 80
+  },
+  thumbnail: {
+    type : String,
+    required : true, 
   },
   content : {
     type : String,
@@ -43,14 +70,25 @@ export let PostSchema = new Schema<BlogPost>({
     required : true,
     maxlength : 120
   },
+  createdAt : {
+    type : Date,
+    required : true,
+  }
+  ,
+  lastModified : {
+    type : Date,
+    required : true,
+  },
   owner : {
     type : {
+          profilePic : String,
           username : String,
           id : String,
           email : String
         },
     required : true,
   }
+
 })
 
 // UserSchema.pre("save", function(next){

@@ -99,9 +99,9 @@ googleAuthRouter.get('/authentication/google',
   passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 googleAuthRouter.get('/authentication/google/callback', 
-  passport.authenticate('google', {failureRedirect: 'http://localhost:4000/'}),
+  passport.authenticate('google', {failureRedirect: 'http://localhost:8080/signup'}),
   function(req : Request<{authenticatedUser : UserVM}, {}, {authenticatedUser : UserVM}, {authenticatedUser : UserVM}>, res, next) {
-    res.redirect("http://localhost:4000/");
+    res.redirect("http://localhost:8080/response");
     console.log("user in req object: ",req.user);
   });
 
@@ -115,18 +115,15 @@ googleAuthRouter.get('/authentication/google/callback',
 // })
 
 
-googleAuthRouter.get('/logout', (req, res, next)=>{
+googleAuthRouter.post('/logout', (req, res)=>{
+  req.logOut();
   if(req.user){
-    req.logOut();
-    console.log("before", req.session.cookie)
-    req.session.cookie.expires = new Date(1);
-    console.log("after", req.session.cookie)
     req.session.destroy((err)=>{
       if(err) return res.status(400).send({title : "error", msg : err.message})
-      res.redirect("/")
+      res.redirect(process.env.NODE_ENV == "production" ? "/" : "http://localhost:8080/")
     })
   } else {
-    res.redirect("/")
+    res.redirect(process.env.NODE_ENV == "production" ? "/" : "http://localhost:8080/")
   }
 })
 
