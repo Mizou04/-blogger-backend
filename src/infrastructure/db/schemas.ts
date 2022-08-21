@@ -1,7 +1,8 @@
 import { BlogPost } from "@/Entities/BlogPost";
 import User from "@/Entities/User"
+import { BlogPostVM } from "@/ViewModels/BlogPostVM";
 import { createHash } from "crypto";
-import {Schema} from "mongoose"
+import {Schema, SchemaTypes} from "mongoose"
 
 
 export const UserSchema = new Schema<User>({
@@ -44,6 +45,13 @@ export const UserSchema = new Schema<User>({
   lastModified : {
     type : Date,
     required : true
+  },
+  blogPosts : {
+    type: {
+      id : String,
+      title : String,
+      overview : String
+    }
   }
 })
 
@@ -63,7 +71,8 @@ export const PostSchema = new Schema<BlogPost>({
   },
   content : {
     type : String,
-    required : true, 
+    required : true,
+    minlength : 320
   },
   overview : {
     type : String,
@@ -87,10 +96,35 @@ export const PostSchema = new Schema<BlogPost>({
           email : String
         },
     required : true,
-  }
+  },
+  comments : {
+    length : Number,
+    data : {
+      type : Map,
+      of : {
+        owner : {
+          id : String,
+          email : String,
+          profilePic : String, 
+          username : String,
+        },
+        text : String,
+        date : Date,
+        lastModified : Date,
+        id : String
+      },
+      required : true
+    },
+  },
+  likes : {
+    length : Number,
+    data : {
+      type : Map,
+      of : String,
+    }
+  },
 
 })
-
 // UserSchema.pre("save", function(next){
 //   let user = this;
 //   if(this.isNew){

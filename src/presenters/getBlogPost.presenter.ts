@@ -1,5 +1,5 @@
 import { BlogPost } from "@/Entities/BlogPost";
-import { GetBlogPostOutputPort } from "@/interactors/getPost.interactor";
+import { GetBlogPostOutputPort } from "@/interactors/getBlogPost.interactor";
 import { BlogPostVM } from "@/ViewModels/BlogPostVM";
 
 export class GetBlogpostPresenter implements GetBlogPostOutputPort{

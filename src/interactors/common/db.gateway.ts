@@ -1,10 +1,9 @@
-import { BlogPostParams } from "@/common/postParams";
+import { BlogPostParams } from "@/common/BlogPostParams";
 import { userParams } from "@/common/userParams";
-import { BlogPost } from "@/Entities/BlogPost";
+import { BlogPost, TBlogpost } from "@/Entities/BlogPost";
 import User from "@/Entities/User";
 
-type TUser = Omit<User, "id" | "joinedAt" | "lastModified">;
-type TBlogpost = Omit<BlogPost, "id" | "createdAt" | "lastModified">;
+export type TUser = Omit<User, "id" | "joinedAt" | "lastModified">;
 
 export interface UserGateway{
   getUser(params : userParams) : Promise<User | null>,
@@ -14,8 +13,8 @@ export interface UserGateway{
 }
 
 export interface BlogPostGateway{
-  getPost(params : BlogPostParams) : Promise<BlogPost | null>,
-  // setPost(params :  TBlogpost) : Promise<null>,
+  getBlogPost(params : BlogPostParams) : Promise<BlogPost>,
+  setBlogPost(params :  TBlogpost) : Promise<null>,
   // updatePost(params :  TBlogpost, newBlogPostData : TBlogpost) : Promise<null>,
   // deletePost(params :  TBlogpost, newBlogPostData : TBlogpost) : Promise<null>,
 }

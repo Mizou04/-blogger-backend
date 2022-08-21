@@ -1,5 +1,5 @@
-import { BlogPostParams } from "@/common/postParams";
-import { GetBlogPostInputPort } from "@/interactors/getPost.interactor";
+import { BlogPostParams } from "@/common/BlogPostParams";
+import { GetBlogPostInputPort } from "@/interactors/getBlogPost.interactor";
 
 export class GetBlogpostController{
   inputPort : GetBlogPostInputPort;
