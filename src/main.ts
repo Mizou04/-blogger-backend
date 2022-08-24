@@ -57,21 +57,19 @@ app.use(blogPostRouter);
 app.use((err : any, req : Request, res : Response, next : NextFunction)=>{
     console.log("err MiddleWare : ", JSON.stringify(err.message));
     if(err instanceof DBError || err instanceof InvalidInputError){
-      res.status(404).json({title : err.name, message : err.message});
+      res.status(404).json({title : err.title, msg : err.message});
     } else {
     console.log(JSON.stringify(err));
-    res.status(500).send("Server Exception 500")
+    res.status(500).send("Server Internal Error")
   }
 })
 
 app.get('/', (req, res)=>{
   if(req.user){
-    res.status(200).json({
-      user : req.user,
-      articles : [{title : "ss", content:"ssssss"}, {title : "dd", content:"dddddd"}]
-    });
+    res.status(200).json(req.user);
+    res.json([{title : "ss", content:"ssssss"}, {title : "dd", content:"dddddd"}])
   } else {
-    res.json({articles : [{title : "ss", content:"ssssss"}, {title : "dd", content:"dddddd"}]});
+    res.json({user : {id : 1, name : "hamza"}, articles : [{title : "ss", content:"ssssss"}, {title : "dd", content:"dddddd"}]});
   }
 })
 

@@ -1,8 +1,7 @@
 import { BlogPost } from "@/Entities/BlogPost";
 import User from "@/Entities/User"
 import { BlogPostVM } from "@/ViewModels/BlogPostVM";
-import { createHash } from "crypto";
-import {Schema, SchemaTypes} from "mongoose"
+import mongoose, {Connection, Schema, SchemaTypes, Collection} from "mongoose"
 
 
 export const UserSchema = new Schema<User>({
@@ -125,12 +124,3 @@ export const PostSchema = new Schema<BlogPost>({
   },
 
 })
-// UserSchema.pre("save", function(next){
-//   let user = this;
-//   if(this.isNew){
-//     return null
-//   } else {
-//     throw new Error("user already exists")
-//   };
-
-// }) Omit<UserVM, "providerId" | "lastModified" | "joinedAt" | "name">

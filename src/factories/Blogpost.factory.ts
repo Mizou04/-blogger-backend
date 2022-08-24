@@ -6,6 +6,9 @@ import { BlogPostRepository } from "@/repositories/BlogPost.repository";
 
 import {SetBlogpostPresenter} from "@/presenters/setBlogPost.presenter"
 import {SetBlogPostController} from "@/controllers/setBlogPost.controller"
+import GetBlogpostsGroupPresenter from "@/presenters/getBlogpostsGroup.presenter";
+import { GetBlogPostsGroup } from "@/interactors/getBlogpostsGroup.interactor";
+import GetBlogPostsGroupController from "@/controllers/getBlogPosts.controller";
 
 let blogPostRepo = new BlogPostRepository();
 
@@ -20,6 +23,12 @@ class BlogPostFactory{
     let presenter = new SetBlogpostPresenter(),
         interactor = new SetBlogPostInteractor(presenter, blogPostRepo),
         controller = new SetBlogPostController(interactor);
+    return controller;
+  }
+  makeGetPostsGroup(){
+    let presenter = new GetBlogpostsGroupPresenter();
+    let interactor = new GetBlogPostsGroup(presenter, blogPostRepo);
+    let controller = new GetBlogPostsGroupController(interactor);
     return controller;
   }
 }

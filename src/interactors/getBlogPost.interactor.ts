@@ -6,7 +6,7 @@ import {BlogPostGateway } from "./common/db.gateway";
 
 
 export default class GetBlogPostInteractor implements GetBlogPostInputPort{
-  postGateway: Partial<BlogPostGateway>;
+  postGateway: BlogPostGateway;
   outputPort: GetBlogPostOutputPort;
   constructor(outputPort : GetBlogPostOutputPort, postGateway: BlogPostGateway){
     this.outputPort = outputPort;
@@ -15,7 +15,7 @@ export default class GetBlogPostInteractor implements GetBlogPostInputPort{
 
   async execute(params: BlogPostParams): Promise<BlogPostVM> {
     try{
-      let data = await this.postGateway.getBlogPost!(params);
+      let data = await this.postGateway.getBlogPost(params);
       return this.outputPort.present(data)
     } catch (e){
       throw e
