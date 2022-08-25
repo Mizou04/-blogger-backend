@@ -15,16 +15,18 @@ export class BlogPost{
   lastModified : Date;
   readonly owner : IOwner;
   comments : {
+    id : string, // the id of the blogpost
     length : number,
     data : Record<string, {
       readonly owner : IOwner,
       text : string,
       readonly date : Date,
       lastModified : Date,
-      id : string // owner id + blogpost id + incremental index
+      id : string // blogpost.id + owner.username + date
     }>
   };
   likes : {
+    id : string,
     length : number,
     data : Record<IOwner["id"], IOwner["id"]> // like per user in that particular article
   }
@@ -37,8 +39,8 @@ export class BlogPost{
     this.createdAt = new Date(); 
     this.lastModified = new Date(); 
     this.owner = params.owner;
-    this.comments = {length : 0, data : {}};
-    this.likes = {length : 0, data : {}}
+    this.comments = {length : 0, id : this.id, data : {}};
+    this.likes = {length : 0, id : this.id, data : {}}
   }
 
   static create(params : TBlogpost): BlogPost{
@@ -60,3 +62,17 @@ export class BlogPost{
   }
 
 };
+
+export interface IBlogPostMin{
+  title : string,
+  id : string,
+  thumbnail : string,
+  overview : string,
+  likes : {
+    length : number
+  },
+  comments : {
+    length : number
+  },
+  createdAt : string
+}

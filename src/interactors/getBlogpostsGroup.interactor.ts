@@ -1,6 +1,6 @@
 import { Range } from "@/common/Range";
 import { BlogPost } from "@/Entities/BlogPost";
-import { BlogPostVM } from "@/ViewModels/BlogPostVM";
+import { BlogPostMinVM, BlogPostVM } from "@/ViewModels/BlogPostVM";
 import { BlogPostGateway } from "./common/db.gateway";
 import {BlogPostRepository} from "@/repositories/BlogPost.repository"
 
@@ -35,7 +35,5 @@ export interface getBlogPostsGroupInputPort{
 }
 
 export interface getBlogPostsGroupOutputPort{
-  present(data : BlogPost[]) : BlogPostVM[]
+  present(data : BlogPost[]) : BlogPostVM[] | BlogPostMinVM[]
 }
-
-new GetBlogPostsGroup({present([]){return []}}, new BlogPostRepository()).execute<string>()

@@ -11,6 +11,8 @@ export default class GetBlogPostsGroupController{
   /**
    * 
    * @param params if this is a string, criteria will be accepted and used as RegExp test value
+   * @param params if this is a number, criteria will be ignored and used as number of articles to fetch
+   * @param params if this is a Range, criteria will be ignored and used as range of articles to fetch
    */
   async execute<T>(params? : T) : Promise<any>
   async execute<T>(params : T, criteria?: T extends string ? "title" | "category" | "content" : null) : Promise<any>{

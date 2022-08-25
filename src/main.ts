@@ -12,6 +12,8 @@ import '@/infrastructure/db/config'
 
 import { UserVM } from "./viewmodels/userVM";
 import { DBError, InvalidInputError } from "./common/customErrors";
+import { blogpostFactory } from "./factories/Blogpost.factory";
+import { Range } from "./common/Range";
 
 const app = express();
 const WHITE_LIST = ["http://localhost:8080","localhost:8080"];
@@ -54,25 +56,25 @@ app.use(googleAuthRouter);
 app.use(userRouter);
 app.use(blogPostRouter);
 
-app.use((err : any, req : Request, res : Response, next : NextFunction)=>{
-    console.log("err MiddleWare : ", JSON.stringify(err.message));
-    if(err instanceof DBError || err instanceof InvalidInputError){
-      res.status(404).json({title : err.title, msg : err.message});
-    } else {
-    console.log(JSON.stringify(err));
-    res.status(500).send("Server Internal Error")
-  }
-})
 
-app.get('/', (req, res)=>{
+
+app.get('/', (req, res, next)=>{
   if(req.user){
-    res.status(200).json(req.user);
-    res.json([{title : "ss", content:"ssssss"}, {title : "dd", content:"dddddd"}])
+    res.json({user: req.user})
   } else {
-    res.json({user : {id : 1, name : "hamza"}, articles : [{title : "ss", content:"ssssss"}, {title : "dd", content:"dddddd"}]});
+    res.json({});
   }
 })
 
+app.use((err : any, req : Request, res : Response, next : NextFunction)=>{
+  console.log("err MiddleWare : ", JSON.stringify(err.message));
+  if(err instanceof DBError || err instanceof InvalidInputError){
+    res.status(404).json({title : err.title, msg : err.message});
+  } else {
+  console.log(JSON.stringify(err));
+  res.status(500).send("Server Internal Error")
+}
+})
 
 const PORT = 4000;
 

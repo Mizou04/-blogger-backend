@@ -10,7 +10,7 @@ let miniApp = express.Router();
 miniApp.get('/users/:id', function(req, res, next){
   let {id} = req.params
   getUser.execute({id}).then(user=>{
-    res.status(200).json(user)
+    res.status(200).json({data : user})
   }).catch((e)=>{
     let msg = {title : (e as Error).name, message : (e as Error).message}
     if(e instanceof InvalidInputError || e instanceof DBError){
