@@ -1,19 +1,20 @@
-import express, { NextFunction, ErrorRequestHandler, Request, Response } from "express"
+import express, { NextFunction, ErrorRequestHandler, Request, Response, request, response } from "express"
 import helmet from "helmet";
 import cors from "cors";
-import userRouter from "./infrastructure/server/routers/user.router";
 import mongoose from "mongoose";
-import googleAuthRouter from "./infrastructure/server/routers/auth.router";
-import blogPostRouter from "./infrastructure/server/routers/blogpost.router";
 import session, {MemoryStore} from "express-session"
+// import userRouter from "./infrastructure/server/routers/user.router";
+// import googleAuthRouter from "./infrastructure/server/routers/auth.router";
+// // import blogPostRouter from "./infrastructure/server/routers/blogpost.router";
 import cookieParser from "cookie-parser";
 import "dotenv/config"
-import '@/infrastructure/db/config'
+// import '@/infrastructure/db/config'
 
-import { UserVM } from "./viewmodels/userVM";
+// import { UserVM } from "./viewmodels/userVM";
 import { DBError, InvalidInputError } from "./common/customErrors";
-import { blogpostFactory } from "./factories/Blogpost.factory";
-import { Range } from "./common/Range";
+// // import { blogpostFactory } from "./factories/Blogpost.factory";
+// import { Range } from "./common/Range";
+// import { GetUserController } from "./controllers/common/BaseController";
 
 const app = express();
 const WHITE_LIST = ["http://localhost:8080","localhost:8080"];
@@ -28,12 +29,12 @@ const SESSION = session({
   saveUninitialized : false,
 });
 
-mongoose.connection.once('open', ()=>{
-  console.log('DATABASE connected')
-})
-mongoose.connection.once('error', (err)=>{
-  console.log('DATABASE ERROR ocurred ', err)
-})
+// mongoose.connection.once('open', ()=>{
+//   console.log('DATABASE connected')
+// })
+// mongoose.connection.once('error', (err)=>{
+//   console.log('DATABASE ERROR ocurred ', err)
+// })
 
 
 app.use(helmet({
@@ -51,23 +52,42 @@ app.use(express.json());
 app.use(SESSION)
 app.use(cookieParser())
 
+// app.use(googleAuthRouter);
+// app.use(userRouter);
+// app.use(blogPostRouter);
 
-app.use(googleAuthRouter);
-app.use(userRouter);
-app.use(blogPostRouter);
+app.use((req, res, next)=>{
+  res.locals.isNewUser = true;
 
-
-
-app.get('/', (req, res, next)=>{
-  if(req.user){
-    res.json({user: req.user})
-  } else {
-    res.json({});
-  }
+  next();
 })
 
+// app.get("/authentication/user", (req, res)=>{
+//   if(true){
+//     let userVM : UserVM = {
+//       id: 'ad0865d3e9bc4bdf9989f692890517c3',
+//       providerId: '112926625730383377490',
+//       username: 'No One',
+//       name: 'No One',
+//       email: 'mizou04owl@gmail.com',
+//       joinedAt: 'Sat Sep 17 2022 20:31:11 GMT+0100 (GMT+01:00)',
+//       lastModified: 'Sat Sep 17 2022 20:31:11 GMT+0100 (GMT+01:00)',
+//       blogPosts: undefined
+//     };
+//     res.json({data : userVM, isNewUser : res.locals.isNewUser});
+//     res.locals.isNewUser = false;
+//   } else {
+//     res.redirect(process.env.NODE_ENV == "development" ? "http://localhost:8080/" : "/");
+//   }
+// })
+
+// app.get('/', (req, res, next)=>{
+//   res.send('hi ...');
+// })
+
+
 app.use((err : any, req : Request, res : Response, next : NextFunction)=>{
-  console.log("err MiddleWare : ", JSON.stringify(err.message));
+  console.log("err MiddleWare : ", JSON.stringify((err as Error).stack));
   if(err instanceof DBError || err instanceof InvalidInputError){
     res.status(404).json({title : err.title, msg : err.message});
   } else {

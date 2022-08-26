@@ -1,11 +1,11 @@
 import GetUserController from "@/controllers/getUser.controller";
 import SetUserController from "@/controllers/setUser.controller";
 import User from "@/Entities/User"
-import { UserGateway } from "@/interactors/common/db.gateway";
+import { UserGateway } from "@/interactors/_common/db.gateway";
 import GetUser from "@/interactors/getUser.interactor";
 import SetUser, { SetUserOutputPort } from "@/interactors/setUser.interactor";
 import GetUserPresenter from "@/presenters/getUser.presenter";
-import UserRepository from "@/repositories/User.repository";
+import { UserRepository } from "@/repositories/User.repository";
 import { UserVM } from "@/viewmodels/userVM";
 import mockPresenter, {mockPresenterMethod} from "@/presenters/__mocks__/setUser.presenter"
 jest.mock("@/presenters/__mocks__/setUser.presenter")

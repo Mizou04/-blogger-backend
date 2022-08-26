@@ -2,26 +2,34 @@ import passport from "passport"
 import Google from "passport-google-oauth20"
 import "dotenv/config"
 import { Errback, ErrorRequestHandler, NextFunction, Request, RequestHandler, Response } from "express";
-import { userFactory } from "@/factories/User.factory";
 import { DBError, InvalidInputError } from "@/common/customErrors";
 import express from "express"
-import { UserVM } from "@/viewmodels/userVM";
+import { UserVM } from "@/ViewModels/UserVM";
 import User from "@/Entities/User";
+import helmet from "helmet";
+import GetUser from "@/interactors/getUser.interactor";
+import GetUserPresenter from "@/presenters/user/GetUser.Presenter";
+import userRepository from "@/repositories/User.repository";
+import SetUser from "@/interactors/setUser.interactor";
+import SetUserPresenter from "@/presenters/user/SetUser.presenter";
 
 
 
 let googleAuthRouter = express.Router();
 
+googleAuthRouter.use(helmet({
+  crossOriginResourcePolicy: process.env.NODE_ENV !== 'development',
+  crossOriginOpenerPolicy : process.env.NODE_ENV !== 'development',
+  xssFilter : true
+}))
+
 const GoogleStrategy = Google.Strategy;
 
 googleAuthRouter.use(passport.initialize());
-googleAuthRouter.use(passport.session())
+googleAuthRouter.use(passport.session());
 
-
-let getUser = userFactory.makeGetUser(), 
-    setUser = userFactory.makeSetUser();
-let isNewUser : boolean = true;
-    
+let getUser = new GetUser(new GetUserPresenter(), userRepository)    
+let setUser = new SetUser(new SetUserPresenter(), userRepository)    
 
 
 async function getOrCreateUserWithGoogle(
@@ -35,8 +43,9 @@ async function getOrCreateUserWithGoogle(
        * if user doesn't exist this function call will throw an Error of DBError type
        * else will return a user instance and we quit this code block
       */
-      let existedUser : UserVM = await getUser.execute({providerId : profile.id});
-      isNewUser = false;
+
+      let existedUser : UserVM = await getUser.execute({userParams : {providerId : profile.id}, complete : true});
+      (req.res as Response).locals["isNewUser"] = false;
       return cb(null, existedUser);
     } catch (e){
       if(e instanceof DBError){
@@ -51,12 +60,14 @@ async function getOrCreateUserWithGoogle(
               username : profile?._json.name || "user"+profile.id.slice(0,6),
               profilePic : profile.photos![0].value,
             });
+            (req.res as Response).locals["isNewUser"] = true;
+
             /**
              * if result == null means our user creation has succeeded else will throw error so we have to rethrow it
              */
             if(result == null){
               try{
-                let newUser = await getUser.execute({providerId : profile.id});
+                let newUser = await getUser.execute({userParams : {providerId : profile.id}, complete: true});
                 return cb(null, newUser);
               } catch (e){
             /**
@@ -96,13 +107,13 @@ passport.deserializeUser((obj : UserVM, done)=>{
 
 
 googleAuthRouter.get('/authentication/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] }));
+  passport.authenticate('google', { scope: ['profile', 'email'], prompt : "select_account" }));
 
 googleAuthRouter.get('/authentication/google/callback', 
   passport.authenticate('google', {failureRedirect: 'http://localhost:8080/signup'}),
   function(req : Request<{authenticatedUser : UserVM}, {}, {authenticatedUser : UserVM}, {authenticatedUser : UserVM}>, res, next) {
     res.redirect("http://localhost:8080/response");
-    console.log("user in req object: ",req.user);
+    console.log("user in req object: ",req.user, req.res?.locals["isNewUser"]);
   });
 
 // googleAuthRouter.use((req, res, next)=>{
@@ -113,6 +124,7 @@ googleAuthRouter.get('/authentication/google/callback',
 // googleAuthRouter.use((req, res, next)=>{
 //   res.setHeader("set-cookie", `isNewUser=${isNewUser}`)
 // })
+
 
 
 googleAuthRouter.post('/logout', (req, res)=>{

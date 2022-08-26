@@ -1,13 +1,16 @@
 import { DBError } from "@/common/customErrors";
 import { Range } from "@/common/Range";
-import { BlogPost } from "@/Entities/BlogPost";
-import { BlogPostGateway } from "@/interactors/common/db.gateway";
+import BlogPost from "@/Entities/BlogPost";
+import { BlogPostGateway } from "@/interactors/_common/db.gateway";
 import { GetBlogPostsGroup } from "@/interactors/getBlogpostsGroup.interactor";
+import { getExistedBlogPostsLength } from "@/interactors/getBlogPostsLength.interactor";
+import { getExistedBlogPostLengthPresenter } from "@/presenters/getExistedBlogPostLength.presenter";
 import { BlogPostVM } from "@/ViewModels/BlogPostVM";
 
 let posts : BlogPost[] = [
   {id:"1",
   comments:{
+    id : '1234',
     data:{
     
   },
@@ -27,12 +30,14 @@ let posts : BlogPost[] = [
   },
   thumbnail:"#10.8767832016764647",
   likes:{
+    id : '1',
     data:{
     
   },
   length:1}},
   {id:"2",
   comments:{
+    id : '1234',
     data:{
     
   },
@@ -52,12 +57,14 @@ let posts : BlogPost[] = [
   },
   thumbnail:"#20.7763217358995349",
   likes:{
+    id : '2',
     data:{
     
   },
   length:1}},
   {id:"3",
   comments:{
+    id : '1234',
     data:{
     
   },
@@ -77,12 +84,14 @@ let posts : BlogPost[] = [
   },
   thumbnail:"#30.9145781283224927",
   likes:{
+    id : '3',
     data:{
     
   },
   length:1}},
   {id:"4",
   comments:{
+    id : '1234',
     data:{
     
   },
@@ -102,12 +111,14 @@ let posts : BlogPost[] = [
   },
   thumbnail:"#41.6134926268614729",
   likes:{
+    id : '4',
     data:{
     
   },
   length:1}},
   {id:"5",
   comments:{
+    id : '1234',
     data:{
     
   },
@@ -127,12 +138,14 @@ let posts : BlogPost[] = [
   },
   thumbnail:"#53.2833954722831993",
   likes:{
+    id : '5',
     data:{
     
   },
   length:1}},
   {id:"6",
   comments:{
+    id : '1234',
     data:{
     
   },
@@ -152,10 +165,11 @@ let posts : BlogPost[] = [
   },
   thumbnail:"#63.232048470689872",
   likes:{
+    id : '6',
     data:{
     
   },
-length:1}}]
+length:6}}]
 
 let postsVm = posts.map(v => new BlogPostVM(v));
 
@@ -187,6 +201,9 @@ let gateway : BlogPostGateway = {
   setBlogPost(params) {
     return Promise.resolve(null)
   },
+  getExistedBlogPostsLength(filter?) {
+    return Promise.resolve(posts.length);
+  },
 }
 let getBlogPostsGroup = new GetBlogPostsGroup({present(data) {
   let dataVM : BlogPostVM[] = [];
@@ -195,6 +212,8 @@ let getBlogPostsGroup = new GetBlogPostsGroup({present(data) {
   }
   return dataVM
 }}, gateway)
+
+let getBlogLength = new getExistedBlogPostsLength(new getExistedBlogPostLengthPresenter(), gateway)
 
 describe("testing the GetBlogpost interactor", ()=>{
 
@@ -219,5 +238,9 @@ describe("testing the GetBlogpost interactor", ()=>{
   test("it returns an Error cause the article wasn't found", async ()=>{
     await expect(getBlogPostsGroup.execute<string>('moha', 'title')).rejects.toThrowError(/No result/igm)
   });
+
+  test("it returns the number of posts we have", async ()=>{
+    await expect(getBlogLength.execute()).resolves.toEqual(posts.length)
+  })
 
 })

@@ -14,17 +14,15 @@ export default class User{
   password? : string;
   readonly joinedAt?: Date;
   lastModified?: Date;
-  blogPosts?: Record<string, {id : string, title : string, overview : string}> | {};
   private constructor(params : User){
     this.providerId = params.providerId;
     this.username = params.username;
     this.name = params.name;
     this.email = params.email;
     this.password = params.password;
-    this.id = params.id || v4().replace(/-/igm, ""); 
+    this.id = v4().replace(/-/igm, ""); 
     this.joinedAt =  new Date();
     this.lastModified =  new Date();
-    this.blogPosts =  params.blogPosts || {};
   }
   
   static create(params: User): User {
@@ -33,9 +31,15 @@ export default class User{
     if(params.name && params.name.length < 4) throw new InvalidInputError("too short name");
     if(validator.isEmail(params.email as string) == false) throw new InvalidInputError('invalid email');
     if(!params.email && !params.providerId) throw new InvalidInputError("user must have email or connect with provider");
-    if(params.providerId && params.password) throw new InvalidInputError("cannot connect with provider and the same email");
+    if(params.providerId && params.password) throw new InvalidInputError("cannot connect with provider and the same email + password");
 
     return new User(params)
   }
 
 }
+
+
+// export interface UserResponseDTO extends Pick<User, "id" | "username" | "email" | "joinedAt" | "lastModified" | "profilePic" | "coverPic" | "providerId">{}
+
+// export interface UserResponseMinDTO extends Pick<UserResponseDTO, "id" | "username" | "profilePic" | "email">{}
+

@@ -1,20 +1,23 @@
+import { BaseInteractor } from "@/interactors/_common/BaseInteractor";
 import { DBError } from "@/common/customErrors";
 import { userParams } from "@/common/userParams";
 import User from "@/Entities/User"
-import { UserVM } from "@/viewmodels/userVM"
-import { UserGateway } from "./common/db.gateway";
+import { UserMinVM, UserVM } from "@/ViewModels/UserVM"
+import { UserGateway } from "./_common/db.gateway";
+import { BasePresenter } from "@/presenters/_common/BasePresenter";
+import GetUserPresenter from "@/presenters/user/GetUser.Presenter";
+import { UserMinResponseDTO, UserResponseDTO } from "@/common/DTOs/User/UserResponseDTO";
 
 
 export default class GetUser implements GetUserInputPort{
-  readonly outputPort: GetUserOutputPort;
-  readonly gateway : UserGateway;
-  constructor(outputport : GetUserOutputPort, gateway : UserGateway){
-    this.outputPort = outputport;
+
+  constructor(public outputPort : GetUserOutputPort, public gateway : UserGateway){
+    this.outputPort = outputPort;
     this.gateway = gateway;
   }
-  async execute(params: userParams): Promise<UserVM> {
+  async execute<T = boolean>(params: { userParams: userParams; complete: T; }): Promise<T extends true ? UserVM : UserMinVM> {
     try{
-      let user = await this.gateway.getUser(params);
+      let user = await this.gateway.getUser<T>(params.userParams, params.complete);
       if(user !== null){
         return this.outputPort.present(user)
       } else {
@@ -22,19 +25,15 @@ export default class GetUser implements GetUserInputPort{
       }
     } catch (e){
       throw e
-    }
+    }    
   }
 }
 
 
 
-export interface GetUserInputPort{
-  readonly outputPort : GetUserOutputPort,
-  readonly gateway : UserGateway
-  execute(params : userParams) : Promise<UserVM>
+export abstract class GetUserInputPort extends BaseInteractor<{userParams : userParams, complete : boolean}, Promise<UserVM | UserMinVM>>{
+  abstract execute<T = boolean>(params: {userParams : userParams, complete : T}) : Promise<T extends true ? UserVM : UserMinVM>;
 }
 
-export interface GetUserOutputPort{
-  present(value : User) : UserVM
+export interface GetUserOutputPort extends BasePresenter<UserResponseDTO | UserMinResponseDTO, UserVM | UserMinVM>{
 }
-
