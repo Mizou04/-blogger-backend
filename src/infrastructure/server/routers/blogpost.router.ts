@@ -8,6 +8,7 @@ import { BlogPostMinVM, BlogPostVM } from "@/ViewModels/BlogPostVM";
 const getBlogPost = blogpostFactory.makeGetPost();
 const getBlogPostsGroup = blogpostFactory.makeGetPostsGroup();
 const setBlogPost = blogpostFactory.makeSetPost();
+const getBlogPostsLength = blogpostFactory.makeGetPostsLength();
 
 function secureThis(req : Request, res : Response, next : NextFunction){
   let {user} = req; 
@@ -46,7 +47,7 @@ blogPostRouter.get("/articles/:from-:to", async (req, res, next)=>{
     let {from, to} = req.params;
     let range = new Range(Number(from), Number(to));
     let data : BlogPostMinVM[] = await getBlogPostsGroup.execute(range);
-    res.json({data});
+    res.json({data, overAllLength : await getBlogPostsLength.execute()});
   } catch (error) {
     next(error)
   }

@@ -17,7 +17,7 @@ export interface BlogPostGateway{
   getBlogPosts<T>(params? : T, criteria?: T extends string ? "title" | "category" | "content" : null) : Promise<BlogPost[]>,
   getBlogPost(params : BlogPostParams) : Promise<BlogPost>,
   setBlogPost(params :  TBlogpost) : Promise<null>,
-
+  getExistedBlogPostsLength(filter? : any) : Promise<number>
   // updatePost(params :  TBlogpost, newBlogPostData : TBlogpost) : Promise<null>,
   // deletePost(params :  TBlogpost, newBlogPostData : TBlogpost) : Promise<null>,
 }

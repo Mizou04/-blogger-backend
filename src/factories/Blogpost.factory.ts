@@ -9,6 +9,9 @@ import {SetBlogPostController} from "@/controllers/setBlogPost.controller"
 import {GetBlogpostsGroupPresenter, GetBlogpostsMinGroupPresenter} from "@/presenters/getBlogpostsGroup.presenter";
 import { GetBlogPostsGroup } from "@/interactors/getBlogpostsGroup.interactor";
 import GetBlogPostsGroupController from "@/controllers/getBlogPosts.controller";
+import { getExistedBlogPostLengthPresenter } from "@/presenters/getExistedBlogPostLength.presenter";
+import { getExistedBlogPostsLength } from "@/interactors/getBlogPostsLength.interactor";
+import { GetExistedBlogPostsLengthController } from "@/controllers/getExistedBlogPostsLength.controller";
 
 let blogPostRepo = new BlogPostRepository();
 
@@ -26,9 +29,16 @@ class BlogPostFactory{
     return controller;
   }
   makeGetPostsGroup(){
-    let presenter = new GetBlogpostsMinGroupPresenter();
-    let interactor = new GetBlogPostsGroup(presenter, blogPostRepo);
+    let presenter = new GetBlogpostsGroupPresenter();
+    let presenterMin = new GetBlogpostsMinGroupPresenter();
+    let interactor = new GetBlogPostsGroup(presenterMin, blogPostRepo);
     let controller = new GetBlogPostsGroupController(interactor);
+    return controller;
+  }
+  makeGetPostsLength(){
+    let presenter = new getExistedBlogPostLengthPresenter();
+    let interactor = new getExistedBlogPostsLength(presenter, blogPostRepo);
+    let controller = new GetExistedBlogPostsLengthController(interactor);
     return controller;
   }
 }
