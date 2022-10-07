@@ -1,4 +1,4 @@
-import { UserVM } from "./viewmodels/userVM";
+import { UserVM } from "../viewmodels/userVM";
 
 // declare global {
   declare namespace Express {

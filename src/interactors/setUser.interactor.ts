@@ -1,8 +1,8 @@
 import { DBError } from "@/common/customErrors";
-import { userParams } from "@/common/userParams";
+import { UserResponseDTO } from "@/common/DTOs/User/UserResponseDTO";
 import User from "@/Entities/User"
-import { UserVM } from "@/viewmodels/userVM"
-import { UserGateway } from "./common/db.gateway";
+import { BaseInteractor } from "./_common/BaseInteractor";
+import { UserGateway } from "./_common/db.gateway";
 
 
 export default class SetUser implements SetUserInputPort{
@@ -12,12 +12,12 @@ export default class SetUser implements SetUserInputPort{
     this.outputPort = outputPort;
     this.gateway = userRepository;
   }
-  async execute(user: User): Promise<null> {
+  async execute(user: User): Promise<{ title: string; message: string; }> {
     try {
-      const existedUser = await this.gateway.getUser({providerId : user.providerId || "", email : user.email, username : user.username});
-      if(existedUser &&  existedUser?.username === user.username) throw new DBError(`User with username : ${user.username} already exists`);
-      if(existedUser &&  existedUser?.email === user.email) throw new DBError(`User with email : ${user.email} already exists`);
-      if(existedUser && existedUser?.providerId === user.providerId) throw new DBError(`User with this provider already exists`);
+      const existedUser : UserResponseDTO | null = await this.gateway.getUser({providerId : user.providerId || "", email : user.email, username : user.username}, true);
+      if(existedUser &&  existedUser?.params.username === user.username) throw new DBError(`User with username : ${user.username} already exists`);
+      if(existedUser &&  existedUser?.params.email === user.email) throw new DBError(`User with email : ${user.email} already exists`);
+      if(existedUser && existedUser?.params.providerId === user.providerId) throw new DBError(`User with this provider already exists`);
       let myUser = User.create(user)
       await this.gateway.setUser(myUser);
       return this.outputPort.present(myUser);
@@ -27,13 +27,13 @@ export default class SetUser implements SetUserInputPort{
   }
 }
 
-export interface SetUserInputPort{
+export interface SetUserInputPort extends BaseInteractor<User, Promise<{title : string, message : string}>>{
   readonly outputPort : SetUserOutputPort,
   readonly gateway : UserGateway
-  execute(user : User) : Promise<null>
+  execute(user : User) : Promise<{title : string, message : string}>
 }
 
 export interface SetUserOutputPort{
-  present(something? : any) : null
+  present(something? : any) : {title : string, message : string}
 }
 

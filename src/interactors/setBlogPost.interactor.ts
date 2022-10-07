@@ -1,7 +1,7 @@
 import { DBError } from "@/common/customErrors";
 import { BlogPostParams } from "@/common/BlogPostParams";
-import { BlogPost, TBlogpost } from "@/Entities/BlogPost";
-import { BlogPostGateway } from "./common/db.gateway";
+import BlogPost  from "@/Entities/BlogPost";
+import { BlogPostGateway } from "./_common/db.gateway";
 
 
 export default class SetBlogPostInteractor implements SetBlogPostInputPort{
@@ -11,7 +11,7 @@ export default class SetBlogPostInteractor implements SetBlogPostInputPort{
     this.outputPort = outputPort;
     this.gateway = BlogPostRepository;
   }
-  async execute(params: TBlogpost): Promise<null> {
+  async execute(params: BlogPost): Promise<null> {
     try {
       let myPost = BlogPost.create(params);
       await this.gateway.setBlogPost(myPost);
@@ -25,10 +25,10 @@ export default class SetBlogPostInteractor implements SetBlogPostInputPort{
 export interface SetBlogPostInputPort{
   readonly outputPort : SetBlogPostOutputPort,
   readonly gateway : BlogPostGateway
-  execute(post : TBlogpost) : Promise<null>
+  execute(post : BlogPost) : Promise<null>
 }
 
 export interface SetBlogPostOutputPort{
-  present(something? : any) : null
+  present(something? : any) : {title : string, message : string}
 }
 
