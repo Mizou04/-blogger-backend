@@ -1,7 +1,7 @@
 import { DBError } from "@/common/customErrors";
 import { Range } from "@/common/Range";
-import { BlogPost } from "@/Entities/BlogPost";
-import { BlogPostGateway } from "@/interactors/common/db.gateway";
+import BlogPost from "@/Entities/BlogPost";
+import { BlogPostGateway } from "@/interactors/_common/db.gateway";
 import { GetBlogPostsGroup } from "@/interactors/getBlogpostsGroup.interactor";
 import { getExistedBlogPostsLength } from "@/interactors/getBlogPostsLength.interactor";
 import { getExistedBlogPostLengthPresenter } from "@/presenters/getExistedBlogPostLength.presenter";

@@ -1,7 +1,7 @@
-import { BlogPost } from "@/Entities/BlogPost";
-import User from "@/Entities/User"
-import { BlogPostVM } from "@/ViewModels/BlogPostVM";
-import mongoose, {Connection, Schema, SchemaTypes, Collection} from "mongoose"
+import BlogPost from "@/Entities/BlogPost";
+import Comment from "@/Entities/Comment";
+import User from "@/Entities/User";
+import {Schema} from "mongoose"
 
 
 export const UserSchema = new Schema<User>({
@@ -31,11 +31,11 @@ export const UserSchema = new Schema<User>({
   },
   profilePic : {
     type : String,
-    required : true
+    required : false
   },
   coverPic : {
     type : String,
-    required : true
+    required : false
   },
   joinedAt : {
     type : Date,
@@ -45,13 +45,6 @@ export const UserSchema = new Schema<User>({
     type : Date,
     required : true
   },
-  blogPosts : {
-    type: {
-      id : String,
-      title : String,
-      overview : String
-    }
-  }
 })
 
 export const PostSchema = new Schema<BlogPost>({
@@ -68,11 +61,6 @@ export const PostSchema = new Schema<BlogPost>({
     type : String,
     required : true, 
   },
-  content : {
-    type : String,
-    required : true,
-    minlength : 320
-  },
   overview : {
     type : String,
     required : true,
@@ -87,40 +75,28 @@ export const PostSchema = new Schema<BlogPost>({
     type : Date,
     required : true,
   },
-  owner : {
-    type : {
-          profilePic : String,
-          username : String,
-          id : String,
-          email : String
-        },
+  ownerId : {
+    type : String,
     required : true,
   },
-  comments : {
-    length : Number,
-    data : {
-      type : Map,
-      of : {
-        owner : {
-          id : String,
-          email : String,
-          profilePic : String, 
-          username : String,
-        },
-        text : String,
-        date : Date,
-        lastModified : Date,
-        id : String
-      },
-      required : true
-    },
-  },
   likes : {
-    length : Number,
-    data : {
-      type : Map,
-      of : String,
-    }
+    type : Set,
+    of : String
   },
 
+})
+
+export const CommentsSchema = new Schema<{postId : string, data : Comment[]}>({
+  postId : {type : String, required : true},
+  data : {
+    type : [],
+    of : {    
+      id : String,
+      postId : String,
+      ownerId : String,
+      content : String,
+      createdAt : Date,
+      lastModified : Date
+    }
+  } 
 })
