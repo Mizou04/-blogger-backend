@@ -3,18 +3,38 @@ import { getExistedBlogPostsLengthInputPort, getExistedBlogPostsLengthOutputPort
 import { getBlogPostsGroupInputPort, getBlogPostsGroupOutputPort } from "@/interactors/getBlogpostsGroup.interactor";
 import { SetBlogPostInputPort, SetBlogPostOutputPort } from "@/interactors/setBlogPost.interactor";
 
+<<<<<<< HEAD
 import blogPostRepository from "@/repositories/BlogPost.repository";
 import userRepository from "@/repositories/User.repository";
+=======
+const getBlogPost = blogpostFactory.makeGetPost();
+const getBlogPostsGroup = blogpostFactory.makeGetPostsGroup();
+const setBlogPost = blogpostFactory.makeSetPost();
+const getBlogPostsLength = blogpostFactory.makeGetPostsLength();
+>>>>>>> origin/cleanup
 
 
 
 
+<<<<<<< HEAD
 // import { Response, Request, NextFunction, Router } from "express";
 // import {blogpostFactory} from "@/factories/Blogpost.factory"
 // import { DBError, InvalidInputError } from "@/common/customErrors";
 // import { BlogPost, BlogPostContent} from "@/Entities/BlogPost";
 // import { Range } from "@/common/Range";
 // import { BlogPostMinVM, BlogPostVM } from "@/ViewModels/BlogPostVM";
+=======
+blogPostRouter.get("/articles/:from-:to", async (req, res, next)=>{
+  try {
+    let {from, to} = req.params;
+    let range = new Range(Number(from), Number(to));
+    let data : BlogPostMinVM[] = await getBlogPostsGroup.execute(range);
+    res.json({data, overAllLength : await getBlogPostsLength.execute()});
+  } catch (error) {
+    next(error)
+  }
+})
+>>>>>>> origin/cleanup
 
 // const getBlogPostsGroup = blogpostFactory.makeGetPostsGroup();
 // const getBlogPostsLength = blogpostFactory.makeGetPostsLength();

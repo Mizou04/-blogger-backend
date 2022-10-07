@@ -65,12 +65,28 @@ class BlogPostRepository implements BlogPostGateway{
       throw err;
     };
   }
+<<<<<<< HEAD
   async deletePost(params: BlogPostParams): Promise<null> {
     return null
   }
   async updatePost(params: BlogPostParams, newBlogPostData: Partial<BlogPost>): Promise<null> {
     return null
   }
+=======
+
+  async getExistedBlogPostsLength(filter? : any): Promise<number> {
+    try {
+      let data = await BlogPostModel.count(filter)
+      if(data){
+        return data;
+      }
+      throw new DBError("can't get the count")
+    } catch (error) {
+      throw error
+    }
+  }
+  
+>>>>>>> origin/cleanup
 }
 
 let blogPostRepository = new BlogPostRepository();
